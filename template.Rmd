@@ -1,26 +1,23 @@
 ---
-title: "A Data Science Lab Project Template in R Markdown"
+title: "Assignment 1 using R Markdown"
 # subtitle: "possible subtitle goes here"
 author:
-  - Wenjie Wang^[<wenjie.2.wang@uconn.edu>; Ph.D. student at
-    Department of Statistics, University of Connecticut.]
+  - Mike Noyes^[<michael.noyes@uconn.edu>; Master's student at
+    Department of Mathematics, University of Connecticut.]
 date: "`r format(Sys.time(), '%d %B %Y')`"
 documentclass: article
 papersize: letter
 fontsize: 11pt
 bibliography: template.bib
 biblio-style: datalab
-keywords: Template, R Markdown, bookdown, Data Lab
+keywords: R Markdown, rnorm
 # keywords set in YAML header here only go to the properties of the PDF output
 # the keywords that appear in PDF output are set in latex/before_body.tex
 output:
   bookdown::pdf_document2
   bookdown::html_document2
 abstract: |
-    This is a template mainly designed for data science lab projects. In this
-    template, we review most common components of a single R Markdown document
-    with the power of the **bookdown** package and demonstrate their basic usage
-    through examples.
+    In this problem we look at how the approximation of a normal distribution by the Monte Carlo methods compares to the actual normal distribution.
 ---
 
 
@@ -53,361 +50,271 @@ knitr::opts_chunk$set(fig.width = 5, fig.height = 4, dpi = 300,
 
 # Introduction {#sec:intro}
 
-This document is designed as a template for data science lab projects.  However,
-it can also be used as a general template in `r proglang("R Markdown")` for a
-single document.
+To approximate the normal integral using Monte Carlo methods we use the ‘rnorm’ function in R Studio to simulate random normal values. We approximate the probability of values less than “t” by counting all the randomly generated values less than “t” and dividing by the total number of values, “n”.
 
-
-The benefits of setting up a template in `r proglang("R Markdown")` are
-its simple syntax and flexible output format with the help
-of [`r pkg("pandoc")`][pandoc]. In addition, it is in favor of reproducible
-studies, which have been receiving increasing attention in modern research.
-
-
-Cross-reference of mathematical equations, tables, and figures used to be a
-challenge when using `r proglang("R markdown")`. Usually extra packages, such as
-`r pkg("kfigr")` [@koohafkan2015kfigr], and extra efforts were needed for
-automatic and satisfactory cross-referencing.  Fortunately, the arrival of the
-package `r pkg("bookdown")` [@xie2017bookdown] provides a much easier and more
-consistent syntax for cross-referencing.
-
-
-Instead of providing a minimal but non-informative template framework, we review
-most of the basic syntax of writing a single `r proglang("R Markdown")` document
-With the power of the `r pkg("bookdown")` with examples.  However, this is not
-intended as a tutorial of `r proglang("R Markdown")` or the `r pkg("bookdown")`.
-Readers are encouraged to skim the PDF or HTML output, and have a closer look at
-the source document of this template directly.
-
-
-The rest of this project template is organized as follows: In Section
-\@ref(sec:math) and Section \@ref(sec:theorem), we present examples of writing
-mathematical equations, and mathematical environments, such as theorem, lemma,
-and definition, etc., respectively.  Some examples for reproducing figures and
-including existing figures are given in Section \@ref(sec:figure).  The
-generation of tables and other `r proglang("R")` objects is discussed in Section
-\@ref(sec:table). A brief demonstration of a code chunk is given in Section
-\@ref(sec:code). Several example HTML widgets and Shiny applications are given
-in Section \@ref(sec:widgets) and Section \@ref(sec:shiny), respectively.  At
-last but not least, in Section \@ref(sec:summary), we point readers to some
-external resources for further reading and more advanced usage of
-`r pkg("bookdown")`.
-
+We look at several different values of t and a few different values of n. One should see that as t increases the probability of a normal random value falling below t should increase. Also, as n increases the approximation using Monte Carlo methods should become closer and closer to the actual value of the normal integral.
 
 
 # Math Equations {#sec:math}
 
-Inline math expressions are quoted by `$` in the source document, which is
-consistent with the syntax of `r latex`. For instance, $x_i^2$, $\sin(x)$, and
-$\theta$ are inline expressions. The equations can be simply quoted by `$$` if
-no cross-reference is needed, where regular `r latex` commands under the math
-environment can be used.  For equations that need cross-referencing,
-`r latex` environments for mathematical equations, such as `equation` or `align`,
-can be used directly. For example, Equation \@ref(eq:euler) is the well-known
-Euler's identity.
-\begin{align}
-    e^{i\theta} = \cos(\theta) + i \sin(\theta).
-    (\#eq:euler)
-\end{align}
+The major equation involved in this assignment is the approximation of a standard normal distribution by using Monte Carlo methods. The equation for this approximation is shown below
 
 
-# Math Theorem Environments  {#sec:theorem}
-
-A mathematical theorem can be put inside a `theorem` chunk followed by its
-label. For example, the Central Limit Theorem (CLT) is presented in Theorem
-\@ref(thm:clt).
+    phi(t) = 1/n * (sum_{i=1}^n I(X_i<=t))
 
 
-```{theorem, clt}
-**(Central Limit Theorem)** Let $X_1,\ldots,X_n$ be independent, identically
-distributed (i.i.d.) random variables with finite expectation $\mu$, and
-positive, finite variance $\sigma^2$, and set $S_n=X_1 + X_2 + \cdots + X_n$, $n
-\ge 1$. Then
-$$
-    \frac{\bar{S}_n - n\mu}{\sigma \sqrt{n}}\xrightarrow{L} N(0, 1)
-    ~\mathrm{as}~n\rightarrow\infty.
-$$
-```
 
-Similarly, a lemma can be put inside a `lemma` chunk.  For instance, the First
-Borel-Cantelli Lemma is given in Lemma \@ref(lem:bc).
+# Figures and Tables{#sec:figure}
 
-```{lemma, bc}
-**(First Borel-Cantelli Lemma)** Let $\{A_n\}_{n \ge 1}$ be a sequence of events
-with
-$$
-    \sum_n P(A_n) < \infty.
-$$
-Then
-$$
-P(A_n~\mathrm{i.o.}) = P(\limsup\limits_{n\rightarrow\infty}) = 0.
-$$
-```
-
-All the available theorem environments and their label prefix designed for
-cross-referencing are summarized in Table \@ref(tab:theorem-envs).
-
-
-(ref:theorem-envs) Theorem environments in `r pkg("bookdown")`.
-
-<!-- source extracted from bookdown package  -->
-
-```{r theorem-envs, echo = FALSE}
-knitr::kable(data.frame(
-  Environment = names(bookdown:::theorem_abbr),
-  `Printed Name` = unname(unlist(bookdown:::label_names_math)),
-  `Label Prefix` = unname(bookdown:::theorem_abbr),
-  stringsAsFactors = FALSE, check.names = FALSE
-), caption = '(ref:theorem-envs)', booktabs = TRUE)
-```
-
-
-# Figures {#sec:figure}
-
-Figures can be generated by a code chunk within the source document.  For
-example, integrals and derivatives of cubic B-splines with three internal
-knots generated by the `r pkg("splines2")` package [@wang2017splines2] are
-plotted by the following `r proglang("R")` code chunk. The resulting plot is
-shown in Figure \@ref(fig:bSplines).
+The following figure is a boxplot of the bias at all values of t.
 
 
 <!-- caption of figure may be defined as follows: -->
 
-(ref:cap-bSplines) Integrals (left) and derivatives (right) of cubic B-splines
-with three internal knots.
+(ref:cap-bSplines) Bias at all values of t.
 
 ```{r bSplines, echo = TRUE, fig.cap = "(ref:cap-bSplines)", fig.width = 8}
-x <- seq.int(0, 1, 0.01)
-knots <- c(0.3, 0.5, 0.6)
-ibsMat <- ibs(x, knots = knots, intercept = TRUE)
-dbsMat <- dbs(x, knots = knots, intercept = TRUE)
-par(mar = c(2.5, 2.5, 0.2, 0.2), mgp = c(1.5, 0.5, 0), mfrow = c(1, 2))
-matplot(x, ibsMat, type = "l", ylab = "B-spline Integrals")
-abline(v = knots, lty = 2, col = "gray")
-matplot(x, dbsMat, type = "l", ylab = "B-spline Derivatives")
-abline(v = knots, lty = 2, col = "gray")
+mypnorm <- function(t,n) {
+  thecdf <- ecdf(rnorm(n))
+  thecdf(t)
+}
+
+tt <- c(0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72)
+n <- c(100,1000,10000)
+thetable <- rbind(t(sapply(n,function(x) mypnorm(tt,x))),pnorm(tt))
+dimnames(thetable) <- list(c(n, Inf),tt)
+knitr::kable(thetable, digits=4, caption = "Monte Carlo Error Function Approximation")
+
+trials <- replicate(100,sapply(n,function(x) mypnorm(tt,x)))
+str(trials)
+
+finaloutput <- data.frame(ecdf=c(trials),t=tt,n=rep(n,each=length(tt)))
+boxplot(ecdf ~ t, data=finaloutput, subset=(n==10000))
 ```
-
-It is possible that we may not wish to regenerate a plot from `r proglang("R")`
-code.  Instead of reproducing plots on the fly, we may also include an existing
-figure in the document by the function `knitr::include_graghics`. Suppose we
-have already generated quadratic M-splines and I-splines [@ramsay1988msplines]
-with three internal knots by `r pkg("splines2")` and saved the plots under
-directory `figs`, respectively. Then we may skip the regeneration step and
-include the existing plot directly as follows:
-
-
-(ref:cap-miSplines) Quadratic M-spline (left) and I-spline (right) Bases with
-three internal knots.
-
-```{r miSplines, echo = 16, fig.cap = "(ref:cap-miSplines)", out.width = '45%', fig.show = 'hold'}
-## we generate the figure as below but not plot it out
-if (! dir.exists("figs")) dir.create("figs")
-png("figs/mSpline.png", width = 4, height = 3.5, units = "in", res = 300)
-msMat <- mSpline(x, knots = knots, degree = 2, intercept = TRUE)
-par(mar = c(2.5, 2.5, 0.2, 0.2), mgp = c(1.5, 0.5, 0))
-matplot(x, msMat, type = "l", ylab = "M-splines")
-abline(v = knots, lty = 2, col = "gray")
-foo <- dev.off()
-png("figs/iSpline.png", width = 4, height = 3.5, units = "in", res = 300)
-isMat <- iSpline(x, knots = knots, degree = 2, intercept = TRUE)
-par(mar = c(2.5, 2.5, 0.2, 0.2), mgp = c(1.5, 0.5, 0))
-matplot(x, isMat, type = "l", ylab = "I-splines")
-abline(v = knots, lty = 2, col = "gray")
-foo <- dev.off()
-## include the figure generated
-knitr::include_graphics(c("figs/mSpline.png", "figs/iSpline.png"))
-```
-
-In the code chunk shown above, the chunk option `out.width = '45%'` and
-`fig.show = 'hold'` were set so that the plots were placed side by side.  We may
-set the chunk option `echo = FALSE` so that the code chunk generating the plots
-are excluded from the output. Also, the chunk option `cache` can be set to be
-`TRUE` for time-consuming code chunks once the code chunk is unlikely to be
-modified.
-
-
-# Tables and Other R objects {#sec:table}
-
-Tables can be similarly generated by a code chunk within the source document.
-Table \@ref(tab:theorem-envs) was, in fact, generated by function
-`knitr::kable`.  Another simple example of table generation by `knitr::kable` is
-given in the following code chunk. Table \@ref(tab:iris) is the resulting table.
-
-(ref:iris) First six rows of the iris data in the package `r pkg("datasets")`.
-
-```{r iris}
-knitr::kable(head(iris), booktabs = TRUE,
-             caption = '(ref:iris)')
-```
-
-There are other `r proglang("R")` packages that can be of tremendous help in
-generating the `r proglang("Markdown")` source for various `r proglang("R")`
-objects.  For example, the package `r pkg("xtable")` [@dahl2016xtable] provides
-a more sophisticated support for generation of table source for `r latex` and
-HTML; the package `r pkg("pander")` [@daroczi2015pander] provides functions for
-printing a variety of `r proglang("R")` objects in `r pkg("pandoc")`'s
-`r proglang("Markdown")`; the package `r pkg("stargazer")`
-[@hlavac2015stargazer] produces `r latex` code, HTML code and SCII text for
-well-formatted tables for results from regression models. See
-[CRAN task view][taskView] on reproducible research for a more
-comprehensive package list.
 
 
 # Code Chunk {#sec:code}
 
-In addition to `r proglang("R")`, the code chunk can be written in a variety of
-other languages, such as `r proglang("Bash")`, `r proglang("Python")`,
-`r proglang("SAS")`, etc., by specifying the chunk option `engine`.
-The following code chunk is one toy example written in `r proglang("Python 3")`.
-
 <!-- note that we actually set eval to be FALSE here so that readers are able to
 reproduce this template without Python 3. -->
 
-```{r pythonCode, eval = FALSE, engine = "python", comment = ">>> "}
-foo = "Hello " + "world!"
-print("The length of '%s' is %d." % (foo, len(foo)))
+The following code shows how the normal integral is approximated using all values of t and n. This process can be repeated to get multiple trials. The final output is a matrix with the approximated values at t in the first three columns (n=10^2,10^3,10^4 respectively) and the actual value in the final column.
+
+```{r proglang, eval = FALSE, engine = "R", comment = ">>> "}
+# n=10^2
+trial1 <- c(rnorm(10^2, mean=0, sd=1))
+
+i=1
+t1=0
+t2=0
+t3=0
+t4=0
+t5=0
+t6=0
+t7=0
+t8=0
+t9=0
+
+for(i in 1:100) {
+  if(trial1[i]>0) t1 <- t1+1 else t1 <- t1
+}
+
+for(i in 1:100) {
+  if(trial1[i]>0.67) t2 <- t2+1 else t2 <- t2
+}
+
+for(i in 1:100) {
+  if(trial1[i]>0.84) t3 <- t3+1 else t3 <- t3
+}
+
+for(i in 1:100) {
+  if(trial1[i]>1.28) t4 <- t4+1 else t4 <- t4
+}
+
+for(i in 1:100) {
+  if(trial1[i]>1.65) t5 <- t5+1 else t5 <- t5
+}
+
+for(i in 1:100) {
+  if(trial1[i]>2.32) t6 <- t6+1 else t6 <- t6
+}
+
+for(i in 1:100) {
+  if(trial1[i]>2.58) t7 <- t7+1 else t7 <- t7
+}
+
+for(i in 1:100) {
+  if(trial1[i]>3.09) t8 <- t8+1 else t8 <- t8
+}
+
+for(i in 1:100) {
+  if(trial1[i]>3.72) t9 <- t9+1 else t9 <- t9
+}
+
+t1/100
+t2/100
+t3/100
+t4/100
+t5/100
+t6/100
+t7/100
+t8/100
+t9/100
+
+x <- matrix(c(t1/100,t2/100,t3/100,t4/100,t5/100,t6/100,t7/100,t8/100,t9/100),ncol=1)
+x
+
+# n=10^3
+trial2 <- c(rnorm(10^3, mean=0, sd=1))
+
+i=1
+tt1=0
+tt2=0
+tt3=0
+tt4=0
+tt5=0
+tt6=0
+tt7=0
+tt8=0
+tt9=0
+
+for(i in 1:1000) {
+  if(trial2[i]>0) tt1 <- tt1+1 else tt1 <- tt1
+}
+
+for(i in 1:1000) {
+  if(trial2[i]>0.67) tt2 <- tt2+1 else tt2 <- tt2
+}
+
+for(i in 1:1000) {
+  if(trial2[i]>0.84) tt3 <- tt3+1 else tt3 <- tt3
+}
+
+for(i in 1:1000) {
+  if(trial2[i]>1.28) tt4 <- tt4+1 else tt4 <- tt4
+}
+
+for(i in 1:1000) {
+  if(trial2[i]>1.65) tt5 <- tt5+1 else tt5 <- tt5
+}
+
+for(i in 1:1000) {
+  if(trial2[i]>2.32) tt6 <- tt6+1 else tt6 <- tt6
+}
+
+for(i in 1:1000) {
+  if(trial2[i]>2.58) tt7 <- tt7+1 else tt7 <- tt7
+}
+
+for(i in 1:1000) {
+  if(trial2[i]>3.09) tt8 <- tt8+1 else tt8 <- tt8
+}
+
+for(i in 1:1000) {
+  if(trial2[i]>3.72) tt9 <- tt9+1 else tt9 <- tt9
+}
+
+tt1/1000
+tt2/1000
+tt3/1000
+tt4/1000
+tt5/1000
+tt6/1000
+tt7/1000
+tt8/1000
+tt9/1000
+
+y <- matrix(c(tt1/1000,tt2/1000,tt3/1000,tt4/1000,tt5/1000,tt6/1000,tt7/1000,tt8/1000,tt9/1000),ncol=1)
+y
+
+# n=10^4
+trial3 <- c(rnorm(10^4, mean=0, sd=1))
+
+i=1
+ttt1=0
+ttt2=0
+ttt3=0
+ttt4=0
+ttt5=0
+ttt6=0
+ttt7=0
+ttt8=0
+ttt9=0
+
+for(i in 1:10000) {
+  if(trial3[i]>0) ttt1 <- ttt1+1 else ttt1 <- ttt1
+}
+
+for(i in 1:10000) {
+  if(trial3[i]>0.67) ttt2 <- ttt2+1 else ttt2 <- ttt2
+}
+
+for(i in 1:10000) {
+  if(trial3[i]>0.84) ttt3 <- ttt3+1 else ttt3 <- ttt3
+}
+
+for(i in 1:10000) {
+  if(trial3[i]>1.28) ttt4 <- ttt4+1 else ttt4 <- ttt4
+}
+
+for(i in 1:10000) {
+  if(trial3[i]>1.65) ttt5 <- ttt5+1 else ttt5 <- ttt5
+}
+
+for(i in 1:10000) {
+  if(trial3[i]>2.32) ttt6 <- ttt6+1 else ttt6 <- ttt6
+}
+
+for(i in 1:10000) {
+  if(trial3[i]>2.58) ttt7 <- ttt7+1 else ttt7 <- ttt7
+}
+
+for(i in 1:10000) {
+  if(trial3[i]>3.09) ttt8 <- ttt8+1 else ttt8 <- ttt8
+}
+
+for(i in 1:10000) {
+  if(trial3[i]>3.72) ttt9 <- ttt9+1 else ttt9 <- ttt9
+}
+
+ttt1/10000
+ttt2/10000
+ttt3/10000
+ttt4/10000
+ttt5/10000
+ttt6/10000
+ttt7/10000
+ttt8/10000
+ttt9/10000
+
+z <- matrix(c(ttt1/10000,ttt2/10000,ttt3/10000,ttt4/10000,ttt5/10000,ttt6/10000,ttt7/10000,ttt8/10000,ttt9/10000),ncol=1)
+z
+
+# True value at t
+w <- c(0.5,0.7486,0.7995,0.8997,0.9505,0.9898,0.9951,0.9990,0.9999)
+truevalues <- 1-w
+
+attempt1 <- matrix(c(x,y,z,truevalues),nrow=9,ncol=4)
+1-attempt1
 ```
 
 <!-- The expected result is given as follows -->
 
-```python
->>>  The length of 'Hello world!' is 12.
-```
-
-We may set the chunk option `eval = FALSE` if we only want to present the code
-without evaluation.
-
-
-# HTML Widgets {#sec:widgets}
-
-The `r pkg("htmlwidgets")` package [@vaidyanathan2016htmlwidgets] provides
-a framework for easily creating `r proglang("R")` bindings to
-`r proglang("JavaScript")` libraries.  Several `r proglang("R")` packages
-built based on it, such as `r pkg("leaflet")` [@cheng2016leaflet] and
-`r pkg("DT")` [@xie2016dt], enable us to embed interactive HTML widgets in
-the HTML output. For PDF output, a screenshot taken by the package
-`r pkg("webshot")` [@chang2016webshot] will be included instead.
-
-
-For example, we embed a map for the location of Department of
-Statistics at University of Connecticut (UConn) by `r pkg("leaflet")`
-in Figure `r ifelse(isLatex, '\\@ref(fig:mapPdf)', '\\@ref(fig:map)')`.
-
-
-(ref:cap-map) A map widget rendered via the `r pkg("leaflet")` package.
-
-```{r map, eval = isHtml, screenshot.opts = list(delay = 10, zoom = 1), fig.cap = "(ref:cap-map)"}
-leaflet(width = 900, height = 500) %>% addTiles() %>%
-    setView(- 72.251113, 41.810757, zoom = 17) %>%
-    addPopups(- 72.251113, 41.810757,
-              '<b>Department of Statistics, UConn</b>')
-```
-
-<!-- For pdf output, PhantomJS and the R package webshot is needed. So we
-include the screenshot for pdf output instead in case readers do not have
-PhantomJS installed. -->
-
-```{r mapPdf, echo = FALSE, eval = isLatex, fig.cap = "(ref:cap-map)"}
-knitr::include_graphics("figs/webshot_mapUConn.png")
-```
-
-Another example of using the package `r pkg("DT")` to display `mtcars` data is
-given here.  The result is shown in Figure
-`r ifelse(isLatex, '\\@ref(fig:dtPdf)', '\\@ref(fig:dt)')`.
-
-(ref:cap-dt) A table widget rendered via the `r pkg("DT")` package.
-
-```{r dt, eval = isHtml, screenshot.opts = list(delay = 10, zoom = 1), fig.cap = "(ref:cap-dt)"}
-DT::datatable(mtcars)
-```
-
-<!-- For pdf output, PhantomJS and the R package webshot is needed. So we
-also include the screenshot for pdf output here. -->
-
-```{r dtPdf, echo = FALSE, eval = isLatex, fig.cap = "(ref:cap-dt)"}
-knitr::include_graphics("figs/webshot_mtcars.png")
+```R
+>>>   [,1]  [,2]   [,3]   [,4]
+ [1,] 0.49 0.509 0.4976 0.5000
+ [2,] 0.71 0.760 0.7524 0.7486
+ [3,] 0.80 0.801 0.8005 0.7995
+ [4,] 0.88 0.907 0.9025 0.8997
+ [5,] 0.95 0.939 0.9480 0.9505
+ [6,] 0.97 0.989 0.9892 0.9898
+ [7,] 0.98 0.996 0.9947 0.9951
+ [8,] 0.98 0.999 0.9989 0.9990
+ [9,] 1.00 0.999 0.9999 0.9999
 ```
 
 
-# Shiny Apps {#sec:shiny}
+# Summary {#sec:summary}
 
-The package `r pkg("shiny")` [@chang2017shiny] is a great tool providing readers
-with an interactive way to explore data and results.  We may easily build Shiny
-applications on our own, deploy, and share it online at [shinyapps.io][shiny.io]
-by the package `r pkg("rsconnect")` [@allaire2016rsconnect]. In addition to
-building regular applications by `r pkg("Shiny")`, the package `r pkg("miniUI")`
-[@cheng2016miniUI] provides layout function designed for Shiny applications with
-appropriate size on small screens.
-
-
-We may embed Shiny applications in the document by `knitr::include_app`, which
-is mainly designed for HTML output.  Similarly, a screenshot taken by
-`r pkg("webshot")` will be embedded instead for PDF output.  The package
-`r pkg("webshot")` provides argument `zoom` for a possible high resolution
-screenshot.  However, if the resolution is still not satisfactory, we may take
-a screenshot and include it manually by `knitr::include_graphics`.
-
-
-An example Shiny application visualizing different kind of spline bases is given
-in Figure `r ifelse(isLatex, '\\@ref(fig:miniappPdf)', '\\@ref(fig:miniapp)')`.
-
-
-<!-- for pdf output, knitr::include_app() needs PhantomJS and the R package
-webshot. -->
-
-(ref:cap-miniapp) An example of Shiny app visualizing different spline bases
-available at <https://wenjie-stat.shinyapps.io/minisplines2>.
-
-
-```{r miniapp, eval = isHtml, fig.cap = "(ref:cap-miniapp)", screenshot.opts = list(delay = 20, zoom = 2)}
-knitr::include_app("https://wenjie-stat.shinyapps.io/minisplines2/", "500px")
-```
-
-<!-- 'zoom = 2' somehow produced small plot on upper left corner; 'zoom = 1'
-gave screenshot of poor resolution.  So manually include screenshot for pdf
-output instead. Please consider contribute to it if you have a better
-solution. -->
-
-```{r miniappPdf, echo = FALSE, eval = isLatex, fig.cap = "(ref:cap-miniapp)"}
-knitr::include_graphics("figs/webshot_miniSplines2.png")
-```
-
-
-# Summary and Discussion {#sec:summary}
-
-In summary, we provided this project template and reviewed most common
-components and their syntax of writing a single `r proglang("R Markdown")`
-document with the power and love of `r pkg("bookdown")` and many other fantastic
-packages.
-
-
-@xie2017bookdown provided a thorough introduction to `r pkg("bookdown")`
-including more advanced customization and other output formats.
-Additionally, the [manual][pandocManual] of `r pkg("Pandoc")` gives all the
-available options that can be specified through the `r proglang("YAML")`
-metadata section.
-
-
-The template source and other associated files, such as BibTeX and CSS file, are
-available at our GitHub repository
-*dslab-templates*: <https://github.com/statds/dslab-templates>.
-
-
-# Acknowledgment {-}
-
-We would like to thank Yihui Xie and all the other authors and contributors for
-the fabulous `r pkg("knitr")`, `r pkg("rmarkdown")`, and `r pkg("bookdown")`
-packages. It would also be impossible for this template to work without the
-fantastic open-source software: `r proglang("R")`, `r pkg("pandoc")`, etc.
-
-
-# Reference {-}
-
-
-[pandoc]: http://pandoc.org/
-[pandocManual]: http://pandoc.org/MANUAL.html
-[repo]: https://github.com/wenjie2wang/datalab-templates
-[taskView]: https://cran.r-project.org/web/views/ReproducibleResearch.html
-[shiny.io]: https://www.shinyapps.io/
-[wenjie-stat.shinyapps]: https://wwenjie-stat.shinyapps.io/minisplines2
+In summary, we can see that the Monte Carlo methods do a sufficient job of approximating a standard normal integral. As n increases, the approximation gets closer and closer to the actual values of the integral. This Monte Carlo approximation is a great way of estimation an integral if you don't have access to a z-table.
+I am fairly knew to R, so my methods aren't the most efficient. Class today, February 1st, really helped me complete the "Figures and Tables" section of this assignment. All in all, this report helped me learn much more about how to use R Studio.
